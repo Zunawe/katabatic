@@ -10,10 +10,11 @@ function App(){
 		_this.ctx = _this.canvas.getContext('2d');
 
 		_this.trees = [];
-		for(var i = 0; i < 20; ++i){
+		for(var i = 0; i < 100; ++i){
 			let depth = Math.random() * 100;
-			_this.trees.push(new Tree(_this.ctx, {x: 100 + (30 * (i + Math.random())), y: 200 - depth, scale: 60 * (1 - (depth / 100)) + 10}));			
+			_this.trees.push(new Tree(_this.ctx, {x: 100 + (10 * (i + Math.random())), y: 200 - depth, scale: 60 * (1 - (depth / 100)) + 10}));			
 		}
+		_this.trees.sort((a, b) => a.y - b.y);
 
 		_this.wind = new Wind(windSpeed);
 
@@ -28,10 +29,9 @@ function App(){
 
 	_this.update = function (){
 		_this.clear();
-		_this.ctx.fillStyle = '#4B5';
 
 		var d = new Date();
-		_this.trees.forEach((tree) => tree.update(_this.wind.getForce(d.getTime() + ((tree.x / _this.ctx.canvas.width) * 100) + ((tree.y / _this.ctx.canvas.height) * 60))));
+		_this.trees.forEach((tree) => tree.update(_this.wind.getForce(d.getTime() - (tree.x * windSpeed / 3))));
 	}
 }
 
@@ -40,9 +40,11 @@ function Tree(ctx, options){
 
 	_this.salt = Math.random();
 
-	_this.kappa = 30;
+	_this.greenShade = Math.trunc((Math.random() * 20) + 180).toString(16);
+
+	_this.kappa = 21.2;
 	_this.omega = 0;
-	_this.theta = ((_this.salt * 10)) * Math.PI / 180;
+	_this.theta = ((_this.salt * 5)) * Math.PI / 180;
 
 	options = options === undefined ? {} : options;
 
@@ -54,6 +56,8 @@ function Tree(ctx, options){
 	_this.scale = options.scale === undefined ? 1 : options.scale;
 
 	_this.draw = function (){
+		_this.ctx.fillStyle = '#40' + _this.greenShade + '50';
+
 		_this.ctx.save();
 		_this.ctx.translate(_this.x, _this.y);
 		_this.ctx.rotate(_this.theta / 2);
@@ -88,8 +92,8 @@ function Wind(speed){
 	_this.speed = speed ? speed : 5;
 
 	_this.getForce = function (t){
-		var speed = Math.sqrt(_this.speed / 3);
-		return (speed * Math.sin(t / Math.PI)) * ((speed * Math.sin(t / 100))) + (speed * 0.7);
+		var speed = (_this.speed / 6) + 2;
+		return (_this.speed / 5) * ((Math.sin(t / (10 * (speed + 1)))) * (Math.sin(t / 50))) + (speed / 2);
 		// return (((Math.sin(_this.speed * t / (3 * Math.PI))) * (Math.sin(_this.speed * t / 100))) * (_this.speed / 15) + (_this.speed / 15)) * (_this.speed / 10) + 10;
 	}
 }
