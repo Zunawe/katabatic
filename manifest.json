@@ -1,0 +1,12 @@
+{
+    "manifest_version": 2,
+
+    "name": "Name WIP",
+    "description": "New tab that reflects the weather at the current geolocation",
+    "version": "0.1",
+
+    "permissions": ["management"],
+    "chrome_url_overrides": {
+        "newtab": "test.html"
+    }
+}
